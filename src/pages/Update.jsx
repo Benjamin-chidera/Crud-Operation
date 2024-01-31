@@ -11,13 +11,15 @@ export const Update = () => {
   const { id } = useParams();
   const redirect = useNavigate();
 
+  const token = localStorage.getItem("token");
+
   const url = `https://goalon.onrender.com/api/v1/goals/${id}`;
 
   const Update = async () => {
     try {
       const {
         data: { goal },
-      } = await axios(url);
+      } = await axios(url)
 
       if (goal) {
         setTitle(goal.title);
@@ -33,9 +35,18 @@ export const Update = () => {
   }, [id]);
 
   const handleUpdate = async (e) => {
+
+
+
     e.preventDefault();
     try {
-      const res = await axios.patch(url, { title, description });
+      const res = await axios.patch(
+        url,
+        { title, description },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       if (res) {
         toast.success("Updated SuccessFully");
@@ -69,7 +80,10 @@ export const Update = () => {
           />
         </div>
         <div className="mt-4">
-          <button className=" border p-3 shadow-inner rounded-md">
+          <button
+            className=" border p-3 shadow-inner rounded-md"
+            disabled={!token}
+          >
             <FaEdit />
           </button>
         </div>

@@ -7,6 +7,8 @@ import { Link } from "react-router-dom";
 export const Goals = ({ items }) => {
   const { handleDelete } = useGlobalContext();
 
+  const token = localStorage.getItem("token")
+
 
   return (
     <div className="m-5">
@@ -22,6 +24,7 @@ export const Goals = ({ items }) => {
             <p className=" capitalize font-semibold text-xl">{description}</p>
             <div className="flex gap-10">
               <Link
+              
                 to={`/update/${_id}`}
                 className=" border p-3 shadow-inner rounded-md"
                 
@@ -29,6 +32,7 @@ export const Goals = ({ items }) => {
                 <FaEdit />
               </Link>
               <button
+              disabled={!token}
                 className=" border p-3 shadow-inner rounded-md"
                 onClick={() => handleDelete(_id)}
               >

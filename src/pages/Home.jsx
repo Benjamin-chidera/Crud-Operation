@@ -3,13 +3,42 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useGlobalContext } from "../hook/useGlobalContext";
 import { Goals } from "./Goals";
+import { Link } from "react-router-dom";
 
 export const Home = () => {
   const { title, setTitle, description, setDescription, handleSubmit, items } =
     useGlobalContext();
 
+  const token = localStorage.getItem("token");
+
+  const handleLogOut = () => {
+    localStorage.removeItem("token");
+    window.location.reload()
+  };
+
   return (
     <div>
+      {token ? (
+        <div className=" text-end">
+          {" "}
+          <button
+            className=" border py-1 px-5 rounded-md"
+            onClick={handleLogOut}
+          >
+            LogOut
+          </button>
+        </div>
+      ) : (
+        <div className="flex justify-center gap-20 mb-5">
+          <Link to={"/register"} className=" border py-1 px-5 rounded-md">
+            Register
+          </Link>
+          <Link to={"/login"} className=" border py-1 px-5 rounded-md">
+            Login
+          </Link>
+        </div>
+      )}
+
       <ToastContainer position="bottom-left" />
       <form onSubmit={handleSubmit}>
         <div className=" flex justify-center gap-10 items-center mb-3">

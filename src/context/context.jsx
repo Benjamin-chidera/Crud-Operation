@@ -9,29 +9,33 @@ export const AppProvider = ({ children }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  if (!title || !description) {
-    return toast.error("Please fill all inputs");
-  }
+  const token = localStorage.getItem("token");
 
-  try {
-    await axios.post("https://goalon.onrender.com/api/v1/goals", {
-      title,
-      description,
-    });
-    toast.success("Created Successfully");
-  } catch (error) {
-    console.log(error.message);
-    toast.error("Failed to create goal");
-  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!title || !description) {
+      return toast.error("Please fill all inputs");
+    }
 
-  
-  setTitle("");
-  setDescription("");
-};
+    try {
+      await axios.post(
+        "https://goalon.onrender.com/api/v1/goals",
+        {
+          title,
+          description,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      toast.success("Created Successfully");
+      window.location.reload();
+    } catch (error) {
+      console.log(error.message);
+      toast.error("Failed to create goal please login or check your internet connection");
+    }
 
-
+    setTitle("");
+    setDescription("");
+  };
 
   const getData = async () => {
     try {
@@ -45,22 +49,26 @@ const handleSubmit = async (e) => {
 
   useEffect(() => {
     getData();
-  }, [items]);
+  }, []);
 
   const handleDelete = async (_id) => {
     try {
       const res = await axios.delete(
-        `https://goalon.onrender.com/api/v1/goals/${_id}`
+        `https://goalon.onrender.com/api/v1/goals/${_id}`,
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       if (res) {
-        return toast.success("Deleted Successfully");
-        //  window.location.reload();
+        toast.success("Deleted Successfully");
+        window.location.reload();
+        return;
       }
     } catch (error) {
       console.log(error.message);
     }
   };
+
+  const BASE_URL = "https://goalon.onrender.com/api/v1";
 
   return (
     <AppContext.Provider
@@ -73,6 +81,7 @@ const handleSubmit = async (e) => {
         items,
         setItems,
         handleDelete,
+        BASE_URL,
       }}
     >
       {children}
