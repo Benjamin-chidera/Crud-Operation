@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import axios from "axios";
 import { createContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -8,6 +9,11 @@ export const AppProvider = ({ children }) => {
   const [items, setItems] = useState([]);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [search, setSearch] = useState("");
+
+  const BASE_URL = "https://goalon.onrender.com/api/v1/goals";
+
+  const url = `${BASE_URL}?title=${search}`;
 
   const token = localStorage.getItem("token");
 
@@ -19,7 +25,7 @@ export const AppProvider = ({ children }) => {
 
     try {
       await axios.post(
-        "https://goalon.onrender.com/api/v1/goals",
+        BASE_URL,
         {
           title,
           description,
@@ -30,7 +36,9 @@ export const AppProvider = ({ children }) => {
       window.location.reload();
     } catch (error) {
       console.log(error.message);
-      toast.error("Failed to create goal please login or check your internet connection");
+      toast.error(
+        "Failed to create goal please login or check your internet connection"
+      );
     }
 
     setTitle("");
@@ -39,7 +47,7 @@ export const AppProvider = ({ children }) => {
 
   const getData = async () => {
     try {
-      const res = await axios("https://goalon.onrender.com/api/v1/goals");
+      const res = await axios(url);
 
       setItems(res.data.goal);
     } catch (error) {
@@ -49,14 +57,13 @@ export const AppProvider = ({ children }) => {
 
   useEffect(() => {
     getData();
-  }, []);
+  }, [search]);
 
   const handleDelete = async (_id) => {
     try {
-      const res = await axios.delete(
-        `https://goalon.onrender.com/api/v1/goals/${_id}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const res = await axios.delete(`${BASE_URL}/${_id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       if (res) {
         toast.success("Deleted Successfully");
@@ -68,7 +75,7 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  const BASE_URL = "https://goalon.onrender.com/api/v1";
+  
 
   return (
     <AppContext.Provider
@@ -82,6 +89,7 @@ export const AppProvider = ({ children }) => {
         setItems,
         handleDelete,
         BASE_URL,
+        setSearch,
       }}
     >
       {children}

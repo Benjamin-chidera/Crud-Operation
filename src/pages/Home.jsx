@@ -4,10 +4,20 @@ import "react-toastify/dist/ReactToastify.css";
 import { useGlobalContext } from "../hook/useGlobalContext";
 import { Goals } from "./Goals";
 import { Link } from "react-router-dom";
+import { useState } from "react";
 
 export const Home = () => {
-  const { title, setTitle, description, setDescription, handleSubmit, items } =
-    useGlobalContext();
+  const {
+    title,
+    setTitle,
+    description,
+    setDescription,
+    handleSubmit,
+    items,
+    setSearch,
+  } = useGlobalContext();
+
+  const [seen, setSeen] = useState("")
 
   const token = localStorage.getItem("token");
 
@@ -16,8 +26,31 @@ export const Home = () => {
     window.location.reload()
   };
 
+  const handleSearch = (e) => {
+    e.preventDefault()
+    setSearch(seen)
+  }
+
+  console.log(seen);
+
   return (
     <div>
+      <form className=" text-center">
+        <input
+          type="text"
+          className="w-[400px] p-2 rounded-md outline-none bg-transparent border mb-5"
+          placeholder="Search..."
+          value={seen}
+          onChange={(e) => setSeen(e.target.value)}
+        />
+        <button
+          className="ms-3 border py-1 px-5 rounded-md"
+          onClick={handleSearch}
+        >
+          Search
+        </button>
+      </form>
+
       {token ? (
         <div className=" text-end">
           {" "}
@@ -45,7 +78,7 @@ export const Home = () => {
           <div>
             <input
               type="text"
-              placeholder="Title"
+              placeholder="Title..."
               className=" w-[400px] p-2 rounded-md outline-none bg-transparent border"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -55,7 +88,7 @@ export const Home = () => {
           <div>
             <input
               type="text"
-              placeholder="Description"
+              placeholder="Description..."
               className=" w-[400px] p-2 rounded-md outline-none bg-transparent border"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
